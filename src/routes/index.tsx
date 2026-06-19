@@ -646,35 +646,6 @@ function Step({
   );
 }
 
-function PrimaryAction({
-  children,
-  onClick,
-  href,
-  icon,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  href?: string;
-  icon?: React.ReactNode;
-}) {
-  const cls =
-    "inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:glow-strong active:scale-[0.98]";
-  if (href) {
-    return (
-      <a href={href} className={cls}>
-        {icon}
-        {children}
-      </a>
-    );
-  }
-  return (
-    <button onClick={onClick} className={cls}>
-      {icon}
-      {children}
-    </button>
-  );
-}
-
 function GhostAction({
   children,
   onClick,
