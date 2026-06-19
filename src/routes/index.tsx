@@ -689,7 +689,7 @@ function GhostAction({
   icon?: React.ReactNode;
 }) {
   const cls = cn(
-    "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:bg-white/10",
+    "inline-flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:bg-white/10 sm:w-auto sm:justify-start",
     active
       ? "border-white/40 bg-white/10 text-foreground glow-soft"
       : "border-white/10 bg-white/[0.03] text-muted-foreground hover:text-foreground",
@@ -722,7 +722,7 @@ function ClashSteps({ os }: { os: OS }) {
     <ol className="space-y-10">
       <Step index={1} title="Скачайте Clash Verge">
         <p>Выберите сборку для вашей платформы.</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {downloads.map((d) => (
             <GhostAction
               key={d.id}
@@ -746,14 +746,12 @@ function ClashSteps({ os }: { os: OS }) {
           Нажмите кнопку — приложение откроется и импортирует профиль
           автоматически.
         </p>
-        <div>
-          <PrimaryAction
-            href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-            icon={<Download className="size-4" />}
-          >
-            Добавить подписку
-          </PrimaryAction>
-        </div>
+        <DeepLinkButton
+          href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+          icon={<Download className="size-4" />}
+        >
+          Добавить подписку
+        </DeepLinkButton>
       </Step>
       <Step index={4} title="Не сработало? Импортируйте вручную">
         <p>
@@ -782,7 +780,7 @@ function HiddifySteps({ os }: { os: OS }) {
     <ol className="space-y-10">
       <Step index={1} title="Скачайте Hiddify">
         <p>Выберите сборку для вашей платформы.</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {downloads.map((d) => (
             <GhostAction
               key={d.id}
@@ -802,14 +800,12 @@ function HiddifySteps({ os }: { os: OS }) {
       </Step>
       <Step index={2} title="Добавьте подписку">
         <p>Откройте приложение и импортируйте профиль одной кнопкой.</p>
-        <div>
-          <PrimaryAction
-            href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-            icon={<Download className="size-4" />}
-          >
-            Добавить подписку
-          </PrimaryAction>
-        </div>
+        <DeepLinkButton
+          href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+          icon={<Download className="size-4" />}
+        >
+          Добавить подписку
+        </DeepLinkButton>
       </Step>
       <Step index={3} title="Подключитесь" last>
         <p>В приложении выберите сервер и нажмите основную кнопку подключения.</p>
