@@ -1,29 +1,631 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Shield,
+  Link2,
+  Send,
+  ChevronDown,
+  Copy,
+  Download,
+  Check,
+  Globe,
+  Apple,
+  Monitor,
+  Smartphone,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Subscription — VPN" },
+      { name: "description", content: "Manage your VPN subscription, install the client and import your config." },
+      { property: "og:title", content: "Subscription — VPN" },
+      { property: "og:description", content: "Manage your VPN subscription, install the client and import your config." },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+const SUBSCRIPTION_URL =
+  "https://vpn.example.com/subscription/intezya/abc123def456";
+
+type OS = "android" | "ios" | "macos" | "windows";
+type Client = "clash" | "hiddify";
+
+const OS_OPTIONS: { id: OS; label: string; icon: React.ReactNode }[] = [
+  { id: "android", label: "Android", icon: <Smartphone className="size-4" /> },
+  { id: "ios", label: "iOS", icon: <Apple className="size-4" /> },
+  { id: "macos", label: "macOS", icon: <Apple className="size-4" /> },
+  { id: "windows", label: "Windows", icon: <Monitor className="size-4" /> },
+];
+
+const LANGS = [
+  { code: "ru", flag: "🇷🇺", label: "Русский" },
+  { code: "en", flag: "🇬🇧", label: "English" },
+  { code: "es", flag: "🇪🇸", label: "Español" },
+  { code: "de", flag: "🇩🇪", label: "Deutsch" },
+];
+
+function copyLink() {
+  if (typeof navigator !== "undefined" && navigator.clipboard) {
+    navigator.clipboard.writeText(SUBSCRIPTION_URL);
+  }
+  toast.success("Ссылка скопирована");
+}
+
 function Index() {
+  const [expanded, setExpanded] = useState(false);
+  const [os, setOs] = useState<OS>("macos");
+  const [client, setClient] = useState<Client>("clash");
+  const [lang, setLang] = useState(LANGS[0]);
+  const [osOpen, setOsOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+
+  const usedGiB = 1.35;
+  const totalGiB = 10;
+  const usedPct = (usedGiB / totalGiB) * 100;
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[520px] -z-0"
+        style={{
+          background:
+            "radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 70%)",
+        }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-0 opacity-[0.015]"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)",
+          backgroundSize: "3px 3px",
+        }}
+      />
+
+      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 pb-32 pt-8 sm:px-8">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-10 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 place-items-center rounded-2xl border border-white/10 bg-white/5 glow-soft">
+              <Shield className="size-5" />
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Subscription
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <IconButton onClick={copyLink} ariaLabel="Скопировать ссылку подписки">
+              <Link2 className="size-[18px]" />
+            </IconButton>
+            <IconButton
+              ariaLabel="Поддержка в Telegram"
+              asLink
+              href="https://t.me/"
+            >
+              <Send className="size-[18px]" />
+            </IconButton>
+          </div>
+        </motion.header>
+
+        {/* Subscription card */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="group relative overflow-hidden rounded-3xl border border-white/10 bg-card glow-soft transition-all duration-500 hover:border-white/20 hover:glow-strong"
+        >
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="flex w-full items-center justify-between gap-4 p-6 text-left"
+          >
+            <div className="flex items-center gap-4">
+              <span className="relative grid size-3 place-items-center">
+                <span className="absolute inset-0 rounded-full bg-white pulse-glow" />
+              </span>
+              <div>
+                <div className="text-base font-medium tracking-tight">
+                  intezya
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Истекает через 7 месяцев
+                </div>
+              </div>
+            </div>
+            <motion.div
+              animate={{ rotate: expanded ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-muted-foreground"
+            >
+              <ChevronDown className="size-5" />
+            </motion.div>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {expanded && (
+              <motion.div
+                key="details"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="border-t border-white/10 px-6 py-5">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
+                    <Field label="Пользователь" value="intezya" />
+                    <Field
+                      label="Статус"
+                      value={
+                        <span className="inline-flex items-center gap-2">
+                          <span className="size-1.5 rounded-full bg-white" />
+                          Активна
+                        </span>
+                      }
+                    />
+                    <Field label="Окончание" value="02.02.2027" />
+                  </div>
+                  <div className="mt-6">
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Трафик</span>
+                      <span className="tabular-nums">
+                        <span className="text-foreground">{usedGiB.toFixed(2)} GiB</span>
+                        <span className="text-muted-foreground"> / {totalGiB.toFixed(2)} GiB</span>
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${usedPct}%` }}
+                        transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                        className="h-full rounded-full bg-white"
+                        style={{ boxShadow: "0 0 12px rgba(255,255,255,0.6)" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.section>
+
+        {/* Install */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          className="mt-12"
+        >
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h2 className="text-xl font-semibold tracking-tight">Установка</h2>
+            <Popover open={osOpen} onOpenChange={setOsOpen}>
+              <PopoverTrigger asChild>
+                <button className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
+                  {OS_OPTIONS.find((o) => o.id === os)?.icon}
+                  <span>{OS_OPTIONS.find((o) => o.id === os)?.label}</span>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform duration-300",
+                      osOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={8}
+                className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
+              >
+                {OS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => {
+                      setOs(opt.id);
+                      setOsOpen(false);
+                    }}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
+                      os === opt.id
+                        ? "bg-white/10 text-foreground"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                    )}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                    {os === opt.id && <Check className="ml-auto size-4" />}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Client toggle */}
+          <ClientToggle client={client} setClient={setClient} />
+
+          {/* Timeline */}
+          <div className="mt-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={client}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+              >
+                {client === "clash" ? (
+                  <ClashSteps os={os} />
+                ) : (
+                  <HiddifySteps os={os} />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.section>
+
+        {/* Language pill */}
+        <div className="mt-16 flex justify-center">
+          <Popover open={langOpen} onOpenChange={setLangOpen}>
+            <PopoverTrigger asChild>
+              <button className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
+                <Globe className="size-4 text-muted-foreground" />
+                <span className="text-base leading-none">{lang.flag}</span>
+                <span>{lang.label}</span>
+                <ChevronDown
+                  className={cn(
+                    "size-4 text-muted-foreground transition-transform duration-300",
+                    langOpen && "rotate-180",
+                  )}
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              sideOffset={8}
+              className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
+            >
+              {LANGS.map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => {
+                    setLang(l);
+                    setLangOpen(false);
+                  }}
+                  className={cn(
+                    "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors",
+                    l.code === lang.code
+                      ? "bg-white/10 text-foreground"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                  )}
+                >
+                  <span className="text-base leading-none">{l.flag}</span>
+                  {l.label}
+                  {l.code === lang.code && (
+                    <Check className="ml-auto size-4" />
+                  )}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+        </div>
+      </main>
     </div>
+  );
+}
+
+function IconButton({
+  children,
+  onClick,
+  ariaLabel,
+  asLink,
+  href,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  ariaLabel: string;
+  asLink?: boolean;
+  href?: string;
+}) {
+  const cls =
+    "group grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition-all duration-300 hover:scale-105 hover:border-white/25 hover:bg-white/10 hover:glow-soft active:scale-95";
+  if (asLink && href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={ariaLabel}
+        className={cls}
+      >
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button onClick={onClick} aria-label={ariaLabel} className={cls}>
+      {children}
+    </button>
+  );
+}
+
+function Field({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-medium">{value}</div>
+    </div>
+  );
+}
+
+function ClientToggle({
+  client,
+  setClient,
+}: {
+  client: Client;
+  setClient: (c: Client) => void;
+}) {
+  const items: { id: Client; label: string }[] = [
+    { id: "clash", label: "Clash Verge" },
+    { id: "hiddify", label: "Hiddify" },
+  ];
+  return (
+    <div className="relative inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+      {items.map((it) => {
+        const active = client === it.id;
+        return (
+          <button
+            key={it.id}
+            onClick={() => setClient(it.id)}
+            className={cn(
+              "relative z-10 rounded-full px-5 py-2 text-sm transition-colors duration-300",
+              active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {active && (
+              <motion.span
+                layoutId="client-pill"
+                transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                className="absolute inset-0 -z-10 rounded-full bg-white"
+                style={{ boxShadow: "0 0 24px rgba(255,255,255,0.35)" }}
+              />
+            )}
+            {it.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function Step({
+  index,
+  title,
+  children,
+  last,
+}: {
+  index: number;
+  title: string;
+  children?: React.ReactNode;
+  last?: boolean;
+}) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.4, delay: 0.05 * index }}
+      className="relative pl-14"
+    >
+      {!last && (
+        <span
+          aria-hidden
+          className="absolute left-[18px] top-10 bottom-[-28px] w-px bg-gradient-to-b from-white/15 to-white/0"
+        />
+      )}
+      <span
+        aria-hidden
+        className="absolute left-0 top-0 grid size-9 place-items-center rounded-full border border-white/10 bg-white/5 text-sm font-medium tabular-nums glow-soft"
+      >
+        {index}
+      </span>
+      <h3 className="text-base font-semibold tracking-tight">{title}</h3>
+      {children && <div className="mt-3 space-y-3 text-sm text-muted-foreground">{children}</div>}
+    </motion.li>
+  );
+}
+
+function PrimaryAction({
+  children,
+  onClick,
+  href,
+  icon,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  icon?: React.ReactNode;
+}) {
+  const cls =
+    "inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:glow-strong active:scale-[0.98]";
+  if (href) {
+    return (
+      <a href={href} className={cls}>
+        {icon}
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button onClick={onClick} className={cls}>
+      {icon}
+      {children}
+    </button>
+  );
+}
+
+function GhostAction({
+  children,
+  onClick,
+  href,
+  active,
+  icon,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  active?: boolean;
+  icon?: React.ReactNode;
+}) {
+  const cls = cn(
+    "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:bg-white/10",
+    active
+      ? "border-white/40 bg-white/10 text-foreground glow-soft"
+      : "border-white/10 bg-white/[0.03] text-muted-foreground hover:text-foreground",
+  );
+  if (href) {
+    return (
+      <a href={href} className={cls}>
+        {icon}
+        {children}
+      </a>
+    );
+  }
+  return (
+    <button onClick={onClick} className={cls}>
+      {icon}
+      {children}
+    </button>
+  );
+}
+
+function ClashSteps({ os }: { os: OS }) {
+  const downloads: { id: string; label: string; matchOs: OS[]; href: string }[] = [
+    { id: "win", label: "Windows", matchOs: ["windows"], href: "#" },
+    { id: "mac-intel", label: "macOS Intel", matchOs: ["macos"], href: "#" },
+    { id: "mac-as", label: "macOS Apple Silicon", matchOs: ["macos"], href: "#" },
+    { id: "linux", label: "Linux", matchOs: [], href: "#" },
+  ];
+
+  return (
+    <ol className="space-y-10">
+      <Step index={1} title="Скачайте Clash Verge">
+        <p>Выберите сборку для вашей платформы.</p>
+        <div className="flex flex-wrap gap-2">
+          {downloads.map((d) => (
+            <GhostAction
+              key={d.id}
+              href={d.href}
+              active={d.matchOs.includes(os)}
+              icon={<Download className="size-4" />}
+            >
+              {d.label}
+            </GhostAction>
+          ))}
+        </div>
+      </Step>
+      <Step index={2} title="Смените язык интерфейса">
+        <p>
+          При необходимости откройте Settings → Language и выберите подходящий
+          язык.
+        </p>
+      </Step>
+      <Step index={3} title="Добавьте подписку">
+        <p>
+          Нажмите кнопку — приложение откроется и импортирует профиль
+          автоматически.
+        </p>
+        <div>
+          <PrimaryAction
+            href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+            icon={<Download className="size-4" />}
+          >
+            Добавить подписку
+          </PrimaryAction>
+        </div>
+      </Step>
+      <Step index={4} title="Не сработало? Импортируйте вручную">
+        <p>
+          Скопируйте ссылку и вставьте её в Profiles → Import в Clash Verge.
+        </p>
+        <div>
+          <GhostAction onClick={copyLink} icon={<Copy className="size-4" />}>
+            Скопировать ссылку
+          </GhostAction>
+        </div>
+      </Step>
+      <Step index={5} title="Подключитесь" last>
+        <p>Выберите сервер, включите VPN и активируйте TUN Mode.</p>
+      </Step>
+    </ol>
+  );
+}
+
+function HiddifySteps({ os }: { os: OS }) {
+  const downloads: { id: string; label: string; matchOs: OS[]; href: string }[] = [
+    { id: "win", label: "Windows", matchOs: ["windows"], href: "#" },
+    { id: "mac", label: "macOS", matchOs: ["macos"], href: "#" },
+    { id: "linux", label: "Linux", matchOs: [], href: "#" },
+  ];
+  return (
+    <ol className="space-y-10">
+      <Step index={1} title="Скачайте Hiddify">
+        <p>Выберите сборку для вашей платформы.</p>
+        <div className="flex flex-wrap gap-2">
+          {downloads.map((d) => (
+            <GhostAction
+              key={d.id}
+              href={d.href}
+              active={d.matchOs.includes(os)}
+              icon={<Download className="size-4" />}
+            >
+              {d.label}
+            </GhostAction>
+          ))}
+        </div>
+        <div className="pt-1">
+          <GhostAction onClick={copyLink} icon={<Copy className="size-4" />}>
+            Скопировать ссылку
+          </GhostAction>
+        </div>
+      </Step>
+      <Step index={2} title="Добавьте подписку">
+        <p>Откройте приложение и импортируйте профиль одной кнопкой.</p>
+        <div>
+          <PrimaryAction
+            href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+            icon={<Download className="size-4" />}
+          >
+            Добавить подписку
+          </PrimaryAction>
+        </div>
+      </Step>
+      <Step index={3} title="Подключитесь" last>
+        <p>В приложении выберите сервер и нажмите основную кнопку подключения.</p>
+      </Step>
+    </ol>
   );
 }
