@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield,
@@ -13,6 +13,7 @@ import {
   Apple,
   Monitor,
   Smartphone,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -68,10 +69,19 @@ function Index() {
   const [lang, setLang] = useState(LANGS[0]);
   const [osOpen, setOsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoaded(true), 700);
+    return () => clearTimeout(t);
+  }, []);
 
   const usedGiB = 1.35;
   const totalGiB = 10;
   const usedPct = (usedGiB / totalGiB) * 100;
+  const resetDate = "02.07.2026";
+  const tone: "ok" | "warn" | "danger" =
+    usedPct >= 95 ? "danger" : usedPct >= 80 ? "warn" : "ok";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -94,26 +104,24 @@ function Index() {
         }}
       />
 
-      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 pb-32 pt-8 sm:px-8">
+      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 pb-32 pt-6 sm:px-8 sm:pt-8">
         {/* Header */}
         <motion.header
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-10 flex items-center justify-between"
+          className="mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:mb-10"
         >
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl border border-white/10 bg-white/5 glow-soft">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid size-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/5 glow-soft">
               <Shield className="size-5" />
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="truncate text-xl font-semibold tracking-tight sm:text-2xl">
               Subscription
             </h1>
           </div>
-          <div className="flex items-center gap-2">
-            <IconButton onClick={copyLink} ariaLabel="Скопировать ссылку подписки">
-              <Link2 className="size-[18px]" />
-            </IconButton>
+          <div className="flex shrink-0 items-center gap-2">
+            <CopyIconButton />
             <IconButton
               ariaLabel="Поддержка в Telegram"
               asLink
@@ -124,6 +132,10 @@ function Index() {
           </div>
         </motion.header>
 
+        {!loaded && <PageSkeleton />}
+
+        {loaded && (
+          <>
         {/* Subscription card */}
         <motion.section
           initial={{ opacity: 0, y: 12 }}
@@ -133,17 +145,19 @@ function Index() {
         >
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="flex w-full items-center justify-between gap-4 p-6 text-left"
+            aria-expanded={expanded}
+            aria-controls="subscription-details"
+            className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
           >
-            <div className="flex items-center gap-4">
-              <span className="relative grid size-3 place-items-center">
+            <div className="flex min-w-0 items-center gap-4">
+              <span className="relative grid size-3 shrink-0 place-items-center">
                 <span className="absolute inset-0 rounded-full bg-white pulse-glow" />
               </span>
-              <div>
-                <div className="text-base font-medium tracking-tight">
+              <div className="min-w-0">
+                <div className="truncate text-base font-medium tracking-tight">
                   intezya
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="truncate text-sm text-muted-foreground">
                   Истекает через 7 месяцев
                 </div>
               </div>
@@ -151,7 +165,7 @@ function Index() {
             <motion.div
               animate={{ rotate: expanded ? 180 : 0 }}
               transition={{ duration: 0.3 }}
-              className="text-muted-foreground"
+              className="shrink-0 text-muted-foreground"
             >
               <ChevronDown className="size-5" />
             </motion.div>
@@ -161,13 +175,14 @@ function Index() {
             {expanded && (
               <motion.div
                 key="details"
+                id="subscription-details"
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
                 className="overflow-hidden"
               >
-                <div className="border-t border-white/10 px-6 py-5">
+                <div className="border-t border-white/10 px-5 py-5 sm:px-6">
                   <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
                     <Field label="Пользователь" value="intezya" />
                     <Field
@@ -183,7 +198,12 @@ function Index() {
                   </div>
                   <div className="mt-6">
                     <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Трафик</span>
+                      <span className="text-muted-foreground">
+                        Трафик
+                        <span className="ml-2 text-xs text-muted-foreground/70">
+                          сброс {resetDate}
+                        </span>
+                      </span>
                       <span className="tabular-nums">
                         <span className="text-foreground">{usedGiB.toFixed(2)} GiB</span>
                         <span className="text-muted-foreground"> / {totalGiB.toFixed(2)} GiB</span>
@@ -194,10 +214,29 @@ function Index() {
                         initial={{ width: 0 }}
                         animate={{ width: `${usedPct}%` }}
                         transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-                        className="h-full rounded-full bg-white"
-                        style={{ boxShadow: "0 0 12px rgba(255,255,255,0.6)" }}
+                        className={cn(
+                          "h-full rounded-full transition-colors duration-500",
+                          tone === "ok" && "bg-white",
+                          tone === "warn" && "bg-amber-300",
+                          tone === "danger" && "bg-rose-400",
+                        )}
+                        style={{
+                          boxShadow:
+                            tone === "ok"
+                              ? "0 0 12px rgba(255,255,255,0.6)"
+                              : tone === "warn"
+                                ? "0 0 12px rgba(252,211,77,0.55)"
+                                : "0 0 12px rgba(251,113,133,0.6)",
+                        }}
                       />
                     </div>
+                    {tone !== "ok" && (
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        {tone === "warn"
+                          ? "Использовано более 80% квоты — следите за расходом."
+                          : "Квота почти исчерпана — трафик скоро закончится."}
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -212,11 +251,11 @@ function Index() {
           transition={{ duration: 0.5, delay: 0.12 }}
           className="mt-12"
         >
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
             <h2 className="text-xl font-semibold tracking-tight">Установка</h2>
             <Popover open={osOpen} onOpenChange={setOsOpen}>
               <PopoverTrigger asChild>
-                <button className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
+                <button className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft sm:px-4">
                   {OS_OPTIONS.find((o) => o.id === os)?.icon}
                   <span>{OS_OPTIONS.find((o) => o.id === os)?.label}</span>
                   <ChevronDown
@@ -279,7 +318,7 @@ function Index() {
         </motion.section>
 
         {/* Language pill */}
-        <div className="mt-16 flex justify-center">
+        <div className="mt-14 flex justify-center sm:mt-16">
           <Popover open={langOpen} onOpenChange={setLangOpen}>
             <PopoverTrigger asChild>
               <button className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
@@ -323,6 +362,8 @@ function Index() {
             </PopoverContent>
           </Popover>
         </div>
+          </>
+        )}
       </main>
     </div>
   );
