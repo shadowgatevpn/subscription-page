@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound, rootRouteId } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -38,6 +38,11 @@ import {
 import { NotFoundComponent } from "./__root";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    if (shouldRenderSubscriptionRootNotFound(undefined, USE_MOCK_SUBSCRIPTION_INFO)) {
+      throw notFound({ routeId: rootRouteId });
+    }
+  },
   head: () => ({
     meta: [
       { title: `${PAGE_TITLE} — VPN` },
