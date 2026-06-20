@@ -22,6 +22,7 @@ import type { LangCode } from "@/lib/i18n";
 import { MOCK_SUBSCRIPTION_INFO } from "@/lib/mock-subscription-info";
 import type { SubscriptionCardData } from "@/lib/subscription-info";
 import { getSubscriptionFailureRedirectUrl } from "@/lib/subscription-redirect";
+import { getSubscriptionInfoPath, getSubscriptionUrlForShortUuid } from "@/lib/subscription-url";
 import { cn } from "@/lib/utils";
 import {
   PAGE_TITLE,
@@ -577,14 +578,14 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
   ],
 };
 
-function copyLink(message: string) {
+function copyLink(message: string, subscriptionUrl: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard) {
-    navigator.clipboard.writeText(SUBSCRIPTION_URL);
+    navigator.clipboard.writeText(subscriptionUrl);
   }
   toast.success(message);
 }
 
-export function Index() {
+export function Index({ shortUuid }: { shortUuid?: string }) {
   const [expanded, setExpanded] = useState(false);
   const [os, setOs] = useState<OS>("macos");
   const [client, setClient] = useState<Client>("clash-verge");
@@ -595,6 +596,12 @@ export function Index() {
   const [subscription, setSubscription] = useState<SubscriptionCardData | null>(null);
   const [subscriptionFailed, setSubscriptionFailed] = useState(false);
   const t = TRANSLATIONS[lang.code];
+  const subscriptionUrl = getSubscriptionUrlForShortUuid(
+    SUBSCRIPTION_URL,
+    shortUuid,
+    typeof window === "undefined" ? undefined : window.location.origin,
+  );
+  const subscriptionInfoPath = getSubscriptionInfoPath(shortUuid);
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 700);
@@ -617,7 +624,7 @@ export function Index() {
       };
     }
 
-    fetch("/api/subscription-info", { cache: "no-store" })
+    fetch(subscriptionInfoPath, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Failed to fetch subscription info");
         return (await response.json()) as SubscriptionCardData;
@@ -643,7 +650,7 @@ export function Index() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [subscriptionInfoPath]);
 
   const usagePercent = subscription?.usagePercent ?? 0;
   const tone: "ok" | "warn" | "danger" =
@@ -699,7 +706,7 @@ export function Index() {
             </h1>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            {SUBSCRIPTION_URL && <CopyIconButton t={t} />}
+            {subscriptionUrl && <CopyIconButton t={t} subscriptionUrl={subscriptionUrl} />}
             {SUPPORT_URL && (
               <IconButton ariaLabel={t.supportTelegram} asLink href={SUPPORT_URL}>
                 <Send className="size-[18px]" />
@@ -900,7 +907,7 @@ export function Index() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <ClientSteps guide={selectedGuide} t={t} />
+                    <ClientSteps guide={selectedGuide} subscriptionUrl={subscriptionUrl} t={t} />
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -985,11 +992,11 @@ function IconButton({
   );
 }
 
-function CopyIconButton({ t }: { t: Translation }) {
+function CopyIconButton({ t, subscriptionUrl }: { t: Translation; subscriptionUrl: string }) {
   const [copied, setCopied] = useState(false);
   const onClick = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(SUBSCRIPTION_URL);
+      navigator.clipboard.writeText(subscriptionUrl);
     }
     toast.success(t.copyToast);
     setCopied(true);
@@ -1267,17 +1274,25 @@ function GhostAction({
   );
 }
 
-function formatSubscriptionDeepLink(guide: ClientGuide): string | null {
-  if (!guide.deepLink || !SUBSCRIPTION_URL) return null;
+function formatSubscriptionDeepLink(guide: ClientGuide, subscriptionUrl: string): string | null {
+  if (!guide.deepLink || !subscriptionUrl) return null;
 
   const value = guide.base64Subscription
-    ? btoa(SUBSCRIPTION_URL)
-    : encodeURIComponent(SUBSCRIPTION_URL);
+    ? btoa(subscriptionUrl)
+    : encodeURIComponent(subscriptionUrl);
   return `${guide.deepLink}${value}`;
 }
 
-function ClientSteps({ guide, t }: { guide: ClientGuide; t: Translation }) {
-  const deepLink = formatSubscriptionDeepLink(guide);
+function ClientSteps({
+  guide,
+  subscriptionUrl,
+  t,
+}: {
+  guide: ClientGuide;
+  subscriptionUrl: string;
+  t: Translation;
+}) {
+  const deepLink = formatSubscriptionDeepLink(guide, subscriptionUrl);
   const manualImportText = guide.manualImport ?? t.manualImportBody;
   const connectText = guide.connect ?? t.hiddifyConnectBody;
   const steps: React.ReactNode[] = [];
@@ -1318,8 +1333,11 @@ function ClientSteps({ guide, t }: { guide: ClientGuide; t: Translation }) {
     <Step key="manual" index={steps.length + 1} title={t.manualImportTitle}>
       <p>{manualImportText}</p>
       <div>
-        {SUBSCRIPTION_URL && (
-          <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
+        {subscriptionUrl && (
+          <GhostAction
+            onClick={() => copyLink(t.copyToast, subscriptionUrl)}
+            icon={<Copy className="size-4" />}
+          >
             {t.copyLink}
           </GhostAction>
         )}

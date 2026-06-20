@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { normalizeSubscriptionInfo } from "@/lib/subscription-info";
-import { getShortUuidFromSubscriptionUrl } from "@/lib/subscription-url";
+import { getShortUuidFromSubscriptionInfoRequest } from "@/lib/subscription-url";
 
 const REMNAWAVE_REAL_IP_HEADER = "x-remnawave-real-ip";
 
@@ -11,7 +11,10 @@ export const Route = createFileRoute("/api/subscription-info")({
       GET: async ({ request }) => {
         const panelUrl = process.env.REMNAWAVE_PANEL_URL?.trim();
         const apiToken = process.env.REMNAWAVE_API_TOKEN?.trim();
-        const shortUuid = getShortUuidFromSubscriptionUrl(process.env.VITE_SUBSCRIPTION_URL ?? "");
+        const shortUuid = getShortUuidFromSubscriptionInfoRequest(
+          request.url,
+          process.env.VITE_SUBSCRIPTION_URL ?? "",
+        );
 
         if (!panelUrl || !apiToken || !shortUuid) {
           return Response.json(

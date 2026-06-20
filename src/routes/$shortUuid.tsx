@@ -18,5 +18,10 @@ export const Route = createFileRoute("/$shortUuid")({
       },
     ],
   }),
-  component: Index,
+  component: ShortSubscriptionPage,
 });
+
+function ShortSubscriptionPage() {
+  const { shortUuid } = Route.useParams();
+  return <Index shortUuid={shortUuid} />;
+}
