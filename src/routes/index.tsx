@@ -48,8 +48,31 @@ export const Route = createFileRoute("/")({
 });
 
 type OS = "android" | "ios" | "macos" | "windows";
-type Client = "clash" | "hiddify";
+type Client =
+  | "clash-meta"
+  | "clash-mi"
+  | "clash-verge"
+  | "exclave"
+  | "flclashx"
+  | "happ"
+  | "hiddify"
+  | "koala-clash"
+  | "prizrak-box"
+  | "shadowrocket"
+  | "stash"
+  | "streisand"
+  | "v2rayng";
 type DownloadOption = { id: string; label: string; href: string };
+type ClientGuide = {
+  id: Client;
+  label: string;
+  downloads: DownloadOption[];
+  deepLink?: string;
+  base64Subscription?: boolean;
+  warning?: string;
+  manualImport?: string;
+  connect?: string;
+};
 
 const OS_OPTIONS: { id: OS; label: string; icon: React.ReactNode }[] = [
   { id: "android", label: "Android", icon: <Smartphone className="size-4" /> },
@@ -58,16 +81,376 @@ const OS_OPTIONS: { id: OS; label: string; icon: React.ReactNode }[] = [
   { id: "windows", label: "Windows", icon: <Monitor className="size-4" /> },
 ];
 
-const CLIENTS_BY_OS: Record<OS, { id: Client; label: string }[]> = {
-  android: [{ id: "clash", label: "Clash Meta" }],
-  ios: [{ id: "clash", label: "Clash Mi" }],
+const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
+  android: [
+    {
+      id: "flclashx",
+      label: "FlClashX",
+      deepLink: "flclashx://install-config?url=",
+      downloads: [
+        {
+          id: "apk",
+          label: "Скачать APK",
+          href: "https://github.com/pluralplay/FlClashX/releases/download/v0.2.1/FlClashX-0.2.1-android-arm64-v8a.apk",
+        },
+      ],
+      connect:
+        "Выберите добавленный профиль в разделе Профили. В панели управления нажмите кнопку включения, затем при необходимости выберите сервер в разделе Прокси.",
+    },
+    {
+      id: "clash-meta",
+      label: "Clash Meta",
+      deepLink: "clashmeta://install-config?name=Remnawave&url=",
+      downloads: [
+        {
+          id: "apk",
+          label: "Скачать APK",
+          href: "https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.20/cmfa-2.11.20-meta-universal-release.apk",
+        },
+        {
+          id: "fdroid",
+          label: "F-Droid",
+          href: "https://f-droid.org/packages/com.github.metacubex.clash.meta/",
+        },
+      ],
+      connect:
+        "Перейдите в Профили и выберите созданный профиль, затем вернитесь на главный экран и нажмите кнопку подключения.",
+    },
+    {
+      id: "happ",
+      label: "Happ",
+      deepLink: "happ://add/",
+      downloads: [
+        {
+          id: "google-play",
+          label: "Google Play",
+          href: "https://play.google.com/store/apps/details?id=com.happproxy",
+        },
+        {
+          id: "apk",
+          label: "Скачать APK",
+          href: "https://github.com/Happ-proxy/happ-android/releases/latest/download/Happ.apk",
+        },
+      ],
+    },
+    {
+      id: "v2rayng",
+      label: "v2rayNG",
+      deepLink: "v2rayng://install-config?name=Remnawave&url=",
+      downloads: [
+        {
+          id: "apk",
+          label: "Скачать APK",
+          href: "https://github.com/2dust/v2rayNG/releases/download/1.10.31/v2rayNG_1.10.31_universal.apk",
+        },
+      ],
+      connect:
+        "Откройте добавленный профиль, выберите сервер и подключитесь с главного экрана приложения.",
+    },
+    {
+      id: "exclave",
+      label: "Exclave",
+      deepLink: "exclave://subscription?url=",
+      downloads: [
+        {
+          id: "apk",
+          label: "Скачать APK",
+          href: "https://github.com/dyhkwong/Exclave/releases/download/0.17.4/Exclave-0.17.4-arm64-v8a.apk",
+        },
+        {
+          id: "fdroid",
+          label: "F-Droid",
+          href: "https://f-droid.org/packages/com.github.dyhkwong.sagernet",
+        },
+      ],
+      connect: "После импорта выберите добавленный профиль и включите подключение в приложении.",
+    },
+  ],
+  ios: [
+    {
+      id: "happ",
+      label: "Happ",
+      deepLink: "happ://add/",
+      downloads: [
+        {
+          id: "app-store-ru",
+          label: "App Store (RU)",
+          href: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973",
+        },
+        {
+          id: "app-store-global",
+          label: "App Store (Global)",
+          href: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
+        },
+      ],
+    },
+    {
+      id: "stash",
+      label: "Stash",
+      deepLink: "stash://install-config?url=",
+      downloads: [
+        {
+          id: "app-store",
+          label: "App Store",
+          href: "https://apps.apple.com/us/app/stash-rule-based-proxy/id1596063349",
+        },
+      ],
+      connect:
+        "На главном экране нажмите Start. Разрешите добавление VPN-конфигурации, затем в разделе Policy выберите страну подключения.",
+    },
+    {
+      id: "streisand",
+      label: "Streisand",
+      deepLink: "streisand://import/",
+      downloads: [
+        {
+          id: "app-store",
+          label: "App Store",
+          href: "https://apps.apple.com/ru/app/streisand/id6450534064",
+        },
+      ],
+    },
+    {
+      id: "shadowrocket",
+      label: "Shadowrocket",
+      deepLink: "sub://",
+      base64Subscription: true,
+      downloads: [
+        {
+          id: "app-store",
+          label: "App Store",
+          href: "https://apps.apple.com/ru/app/shadowrocket/id932747118",
+        },
+      ],
+    },
+    {
+      id: "clash-mi",
+      label: "Clash Mi",
+      deepLink: "clash://install-config?overwrite=no&name=Remnawave&url=",
+      downloads: [
+        {
+          id: "app-store",
+          label: "App Store",
+          href: "https://apps.apple.com/us/app/clash-mi/id6744321968",
+        },
+      ],
+      connect:
+        "На главной странице нажмите Disconnected, разрешите VPN-конфигурацию и введите пароль устройства.",
+    },
+  ],
   macos: [
-    { id: "clash", label: "Clash Verge" },
-    { id: "hiddify", label: "Hiddify" },
+    {
+      id: "happ",
+      label: "Happ",
+      deepLink: "happ://add/",
+      downloads: [
+        {
+          id: "app-store-ru",
+          label: "App Store (RU)",
+          href: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973",
+        },
+        {
+          id: "app-store-global",
+          label: "App Store (Global)",
+          href: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
+        },
+      ],
+    },
+    {
+      id: "koala-clash",
+      label: "Koala Clash",
+      deepLink: "koala-clash://install-config?url=",
+      downloads: [
+        {
+          id: "mac-as",
+          label: "macOS Apple Silicon",
+          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_aarch64.dmg",
+        },
+        {
+          id: "mac-intel",
+          label: "macOS Intel",
+          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_x64.dmg",
+        },
+      ],
+      warning:
+        "Если вы раньше использовали Clash Verge Rev, удалите его перед установкой Koala Clash.",
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Koala Clash откройте главную страницу, нажмите Add Profile, вставьте ссылку и нажмите Import.",
+    },
+    {
+      id: "flclashx",
+      label: "FlClashX",
+      deepLink: "flclashx://install-config?url=",
+      downloads: [
+        {
+          id: "mac-as",
+          label: "macOS Apple Silicon",
+          href: "https://github.com/pluralplay/FlClashX/releases/download/v0.2.1/FlClashX-0.2.1-macos-arm64.dmg",
+        },
+        {
+          id: "mac-intel",
+          label: "macOS Intel",
+          href: "https://github.com/pluralplay/FlClashX/releases/download/v0.2.1/FlClashX-0.2.1-macos-amd64.dmg",
+        },
+      ],
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В FlClashX откройте Профили, нажмите +, выберите URL, вставьте ссылку и отправьте форму.",
+    },
+    {
+      id: "prizrak-box",
+      label: "Prizrak-Box",
+      deepLink: "prizrak-box://install-config?url=",
+      downloads: [
+        {
+          id: "mac-as",
+          label: "macOS Apple Silicon",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/macos-arm64-dmg.zip",
+        },
+        {
+          id: "mac-intel",
+          label: "macOS Intel",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/macos-amd64-dmg.zip",
+        },
+      ],
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Prizrak-Box откройте Profiles, нажмите +, вставьте ссылку и подтвердите.",
+    },
+    {
+      id: "clash-verge",
+      label: "Clash Verge",
+      deepLink: "clash://install-config?url=",
+      downloads: [
+        {
+          id: "mac-intel",
+          label: "macOS Intel",
+          href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_x64.dmg",
+        },
+        {
+          id: "mac-as",
+          label: "macOS Apple Silicon",
+          href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_aarch64.dmg",
+        },
+      ],
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Clash Verge откройте Profiles, вставьте ссылку в поле импорта и нажмите Import.",
+    },
+    {
+      id: "hiddify",
+      label: "Hiddify",
+      deepLink: "hiddify://import/",
+      downloads: [
+        {
+          id: "mac",
+          label: "macOS",
+          href: "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-MacOS.dmg",
+        },
+      ],
+    },
   ],
   windows: [
-    { id: "clash", label: "Clash Verge" },
-    { id: "hiddify", label: "Hiddify" },
+    {
+      id: "flclashx",
+      label: "FlClashX",
+      deepLink: "flclashx://install-config?url=",
+      downloads: [
+        {
+          id: "releases",
+          label: "Windows",
+          href: "https://github.com/pluralplay/FlClashX/releases/tag/v0.2.1",
+        },
+      ],
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В FlClashX откройте Профили, нажмите +, выберите URL, вставьте ссылку и отправьте форму.",
+    },
+    {
+      id: "koala-clash",
+      label: "Koala Clash",
+      deepLink: "koala-clash://install-config?url=",
+      downloads: [
+        {
+          id: "win-x64",
+          label: "Windows",
+          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_x64-setup.exe",
+        },
+        {
+          id: "win-arm",
+          label: "Windows ARM",
+          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_arm64-setup.exe",
+        },
+      ],
+      warning:
+        "Если вы раньше использовали Clash Verge Rev, удалите его перед установкой Koala Clash.",
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Koala Clash откройте главную страницу, нажмите Add Profile, вставьте ссылку и нажмите Import.",
+    },
+    {
+      id: "prizrak-box",
+      label: "Prizrak-Box",
+      deepLink: "prizrak-box://install-config?url=",
+      downloads: [
+        {
+          id: "win-x64",
+          label: "Windows",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-amd64.msi",
+        },
+        {
+          id: "win-portable",
+          label: "Windows Portable",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-amd64.zip",
+        },
+        {
+          id: "win-arm",
+          label: "Windows ARM",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-arm64.msi",
+        },
+      ],
+      warning: "Запустите программу от имени администратора.",
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Prizrak-Box откройте Profiles, нажмите +, вставьте ссылку и подтвердите.",
+    },
+    {
+      id: "happ",
+      label: "Happ",
+      deepLink: "happ://add/",
+      downloads: [
+        {
+          id: "win",
+          label: "Windows",
+          href: "https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x64.exe",
+        },
+      ],
+    },
+    {
+      id: "clash-verge",
+      label: "Clash Verge",
+      deepLink: "clash://install-config?url=",
+      downloads: [
+        {
+          id: "win-x64",
+          label: "Windows",
+          href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_x64-setup.exe",
+        },
+        {
+          id: "win-arm",
+          label: "Windows ARM",
+          href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_arm64-setup.exe",
+        },
+      ],
+      manualImport:
+        "Если подписка не добавилась, скопируйте ссылку. В Clash Verge откройте Profiles, вставьте ссылку в поле импорта и нажмите Import.",
+    },
+    {
+      id: "hiddify",
+      label: "Hiddify",
+      deepLink: "hiddify://import/",
+      downloads: [
+        {
+          id: "win",
+          label: "Windows",
+          href: "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Windows-Setup-x64.exe",
+        },
+      ],
+    },
   ],
 };
 
@@ -81,7 +464,7 @@ function copyLink(message: string) {
 function Index() {
   const [expanded, setExpanded] = useState(false);
   const [os, setOs] = useState<OS>("macos");
-  const [client, setClient] = useState<Client>("clash");
+  const [client, setClient] = useState<Client>("clash-verge");
   const [lang, setLang] = useState(LANGS[0]);
   const [osOpen, setOsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -146,6 +529,7 @@ function Index() {
     : subscriptionFailed
       ? null
       : t.subscriptionLoading;
+  const selectedGuide = CLIENTS_BY_OS[os].find((it) => it.id === client) ?? CLIENTS_BY_OS[os][0];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -385,11 +769,7 @@ function Index() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {client === "clash" ? (
-                      <ClashSteps os={os} t={t} />
-                    ) : (
-                      <HiddifySteps os={os} t={t} />
-                    )}
+                    <ClientSteps guide={selectedGuide} t={t} />
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -657,7 +1037,7 @@ function ClientToggle({
   const items = CLIENTS_BY_OS[os];
 
   return (
-    <div className="relative inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+    <div className="relative flex flex-wrap gap-1 rounded-2xl border border-white/10 bg-white/5 p-1 sm:inline-flex sm:rounded-full">
       {items.map((it) => {
         const active = client === it.id;
         return (
@@ -756,164 +1136,71 @@ function GhostAction({
   );
 }
 
-function getClashDownloads(os: OS): DownloadOption[] {
-  const downloads: Record<OS, DownloadOption[]> = {
-    android: [
-      {
-        id: "android-apk",
-        label: "Скачать APK",
-        href: "https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.20/cmfa-2.11.20-meta-universal-release.apk",
-      },
-      {
-        id: "android-fdroid",
-        label: "F-Droid",
-        href: "https://f-droid.org/packages/com.github.metacubex.clash.meta/",
-      },
-    ],
-    ios: [
-      {
-        id: "ios-app-store",
-        label: "App Store",
-        href: "https://apps.apple.com/us/app/clash-mi/id6744321968",
-      },
-    ],
-    macos: [
-      {
-        id: "mac-intel",
-        label: "macOS Intel",
-        href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_x64.dmg",
-      },
-      {
-        id: "mac-as",
-        label: "macOS Apple Silicon",
-        href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_aarch64.dmg",
-      },
-    ],
-    windows: [
-      {
-        id: "win-x64",
-        label: "Windows",
-        href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_x64-setup.exe",
-      },
-      {
-        id: "win-arm",
-        label: "Windows ARM",
-        href: "https://github.com/clash-verge-rev/clash-verge-rev/releases/download/v2.4.4-rc/Clash.Verge_2.4.4-rc_arm64-setup.exe",
-      },
-    ],
-  };
+function formatSubscriptionDeepLink(guide: ClientGuide): string | null {
+  if (!guide.deepLink || !SUBSCRIPTION_URL) return null;
 
-  return downloads[os];
+  const value = guide.base64Subscription
+    ? btoa(SUBSCRIPTION_URL)
+    : encodeURIComponent(SUBSCRIPTION_URL);
+  return `${guide.deepLink}${value}`;
 }
 
-function getHiddifyDownloads(os: OS): DownloadOption[] {
-  const downloads: Partial<Record<OS, DownloadOption[]>> = {
-    macos: [
-      {
-        id: "mac",
-        label: "macOS",
-        href: "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-MacOS.dmg",
-      },
-    ],
-    windows: [
-      {
-        id: "win",
-        label: "Windows",
-        href: "https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Windows-Setup-x64.exe",
-      },
-    ],
-  };
+function ClientSteps({ guide, t }: { guide: ClientGuide; t: Translation }) {
+  const deepLink = formatSubscriptionDeepLink(guide);
+  const manualImportText = guide.manualImport ?? t.manualImportBody;
+  const connectText = guide.connect ?? t.hiddifyConnectBody;
+  const steps: React.ReactNode[] = [];
 
-  return downloads[os] ?? [];
-}
-
-function getClashDeepLink(os: OS): string {
-  const encodedUrl = encodeURIComponent(SUBSCRIPTION_URL);
-  if (os === "ios") return `clash://install-config?overwrite=no&name=Remnawave&url=${encodedUrl}`;
-
-  return `clash://install-config?url=${encodedUrl}`;
-}
-
-function getHiddifyDeepLink(): string {
-  return `hiddify://import/${encodeURIComponent(SUBSCRIPTION_URL)}`;
-}
-
-function ClashSteps({ os, t }: { os: OS; t: Translation }) {
-  const downloads = getClashDownloads(os);
-
-  return (
-    <ol className="space-y-10">
-      <Step index={1} title={t.clashDownloadTitle}>
-        <p>{t.chooseBuild}</p>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          {downloads.map((d) => (
-            <GhostAction key={d.id} href={d.href} icon={<Download className="size-4" />}>
-              {d.label}
-            </GhostAction>
-          ))}
-        </div>
-      </Step>
-      <Step index={2} title={t.changeLanguageTitle}>
-        <p>{t.changeLanguageBody}</p>
-      </Step>
-      <Step index={3} title={t.addSubscriptionTitle}>
-        <p>{t.clashAddBody}</p>
-        {SUBSCRIPTION_URL && (
-          <DeepLinkButton href={getClashDeepLink(os)} icon={<Download className="size-4" />} t={t}>
-            {t.addSubscriptionButton}
-          </DeepLinkButton>
-        )}
-      </Step>
-      <Step index={4} title={t.manualImportTitle}>
-        <p>{t.manualImportBody}</p>
-        <div>
-          {SUBSCRIPTION_URL && (
-            <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
-              {t.copyLink}
-            </GhostAction>
-          )}
-        </div>
-      </Step>
-      <Step index={5} title={t.connectTitle} last>
-        <p>{t.clashConnectBody}</p>
-      </Step>
-    </ol>
+  steps.push(
+    <Step key="download" index={steps.length + 1} title={`${t.clashDownloadTitle}: ${guide.label}`}>
+      <p>{t.chooseBuild}</p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        {guide.downloads.map((d) => (
+          <GhostAction key={d.id} href={d.href} icon={<Download className="size-4" />}>
+            {d.label}
+          </GhostAction>
+        ))}
+      </div>
+    </Step>,
   );
-}
 
-function HiddifySteps({ os, t }: { os: OS; t: Translation }) {
-  const downloads = getHiddifyDownloads(os);
+  if (guide.warning) {
+    steps.push(
+      <Step key="warning" index={steps.length + 1} title={t.importantTitle}>
+        <p>{guide.warning}</p>
+      </Step>,
+    );
+  }
 
-  return (
-    <ol className="space-y-10">
-      <Step index={1} title={t.hiddifyDownloadTitle}>
-        <p>{t.chooseBuild}</p>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          {downloads.map((d) => (
-            <GhostAction key={d.id} href={d.href} icon={<Download className="size-4" />}>
-              {d.label}
-            </GhostAction>
-          ))}
-        </div>
-        <div className="pt-1">
-          {SUBSCRIPTION_URL && (
-            <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
-              {t.copyLink}
-            </GhostAction>
-          )}
-        </div>
-      </Step>
-      <Step index={2} title={t.addSubscriptionTitle}>
-        <p>{t.hiddifyAddBody}</p>
-        {SUBSCRIPTION_URL && (
-          <DeepLinkButton href={getHiddifyDeepLink()} icon={<Download className="size-4" />} t={t}>
-            {t.addSubscriptionButton}
-          </DeepLinkButton>
-        )}
-      </Step>
-      <Step index={3} title={t.connectTitle} last>
-        <p>{t.hiddifyConnectBody}</p>
-      </Step>
-    </ol>
+  steps.push(
+    <Step key="add" index={steps.length + 1} title={t.addSubscriptionTitle}>
+      <p>{t.clashAddBody}</p>
+      {deepLink && (
+        <DeepLinkButton href={deepLink} icon={<Download className="size-4" />} t={t}>
+          {t.addSubscriptionButton}
+        </DeepLinkButton>
+      )}
+    </Step>,
   );
+
+  steps.push(
+    <Step key="manual" index={steps.length + 1} title={t.manualImportTitle}>
+      <p>{manualImportText}</p>
+      <div>
+        {SUBSCRIPTION_URL && (
+          <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
+            {t.copyLink}
+          </GhostAction>
+        )}
+      </div>
+    </Step>,
+  );
+
+  steps.push(
+    <Step key="connect" index={steps.length + 1} title={t.connectTitle} last>
+      <p>{connectText}</p>
+    </Step>,
+  );
+
+  return <ol className="space-y-10">{steps}</ol>;
 }
