@@ -264,12 +264,12 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
         {
           id: "mac-as",
           label: "macOS Apple Silicon",
-          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_aarch64.dmg",
+          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_arm64.pkg",
         },
         {
           id: "mac-intel",
           label: "macOS Intel",
-          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_x64.dmg",
+          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_x64.pkg",
         },
       ],
       warning:
@@ -304,12 +304,12 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
         {
           id: "mac-as",
           label: "macOS Apple Silicon",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/macos-arm64-dmg.zip",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/macos-arm64.zip",
         },
         {
           id: "mac-intel",
           label: "macOS Intel",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/macos-amd64-dmg.zip",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/macos-amd64.zip",
         },
       ],
       manualImport:
@@ -370,12 +370,12 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
         {
           id: "win-x64",
           label: "Windows",
-          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_x64-setup.exe",
+          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_x64-setup.exe",
         },
         {
           id: "win-arm",
           label: "Windows ARM",
-          href: "https://github.com/coolcoala/clash-verge-rev-lite/releases/latest/download/Koala.Clash_arm64-setup.exe",
+          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_arm64-setup.exe",
         },
       ],
       warning:
@@ -391,17 +391,17 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
         {
           id: "win-x64",
           label: "Windows",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-amd64.msi",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-amd64.msi",
         },
         {
           id: "win-portable",
           label: "Windows Portable",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-amd64.zip",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-amd64.zip",
         },
         {
           id: "win-arm",
           label: "Windows ARM",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/latest/download/windows-arm64.msi",
+          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-arm64.msi",
         },
       ],
       warning: "Запустите программу от имени администратора.",
