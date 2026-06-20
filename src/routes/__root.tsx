@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { PAGE_TITLE } from "@/page-config";
 
 function NotFoundComponent() {
   return (
@@ -78,10 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Subscription — VPN" },
+      { title: `${PAGE_TITLE} — VPN` },
       { name: "description", content: "Manage your VPN subscription and install the client app." },
-      { property: "og:title", content: "Subscription — VPN" },
-      { property: "og:description", content: "Manage your VPN subscription and install the client app." },
+      { property: "og:title", content: `${PAGE_TITLE} — VPN` },
+      {
+        property: "og:description",
+        content: "Manage your VPN subscription and install the client app.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -121,6 +125,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      void import("react-grab");
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

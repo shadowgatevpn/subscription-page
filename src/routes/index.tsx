@@ -16,27 +16,28 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { LANGS, TRANSLATIONS, type Translation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { PAGE_TITLE, SUBSCRIPTION_URL, SUPPORT_URL } from "@/page-config";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Subscription — VPN" },
-      { name: "description", content: "Manage your VPN subscription, install the client and import your config." },
-      { property: "og:title", content: "Subscription — VPN" },
-      { property: "og:description", content: "Manage your VPN subscription, install the client and import your config." },
+      { title: `${PAGE_TITLE} — VPN` },
+      {
+        name: "description",
+        content: "Manage your VPN subscription, install the client and import your config.",
+      },
+      { property: "og:title", content: `${PAGE_TITLE} — VPN` },
+      {
+        property: "og:description",
+        content: "Manage your VPN subscription, install the client and import your config.",
+      },
     ],
   }),
   component: Index,
 });
-
-const SUBSCRIPTION_URL =
-  "https://vpn.example.com/subscription/intezya/abc123def456";
 
 type OS = "android" | "ios" | "macos" | "windows";
 type Client = "clash" | "hiddify";
@@ -48,18 +49,11 @@ const OS_OPTIONS: { id: OS; label: string; icon: React.ReactNode }[] = [
   { id: "windows", label: "Windows", icon: <Monitor className="size-4" /> },
 ];
 
-const LANGS = [
-  { code: "ru", flag: "🇷🇺", label: "Русский" },
-  { code: "en", flag: "🇬🇧", label: "English" },
-  { code: "es", flag: "🇪🇸", label: "Español" },
-  { code: "de", flag: "🇩🇪", label: "Deutsch" },
-];
-
-function copyLink() {
+function copyLink(message: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard) {
     navigator.clipboard.writeText(SUBSCRIPTION_URL);
   }
-  toast.success("Ссылка скопирована");
+  toast.success(message);
 }
 
 function Index() {
@@ -70,6 +64,7 @@ function Index() {
   const [osOpen, setOsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const t = TRANSLATIONS[lang.code];
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 700);
@@ -80,8 +75,7 @@ function Index() {
   const totalGiB = 10;
   const usedPct = (usedGiB / totalGiB) * 100;
   const resetDate = "02.07.2026";
-  const tone: "ok" | "warn" | "danger" =
-    usedPct >= 95 ? "danger" : usedPct >= 80 ? "warn" : "ok";
+  const tone: "ok" | "warn" | "danger" = usedPct >= 95 ? "danger" : usedPct >= 80 ? "warn" : "ok";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -98,13 +92,12 @@ function Index() {
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-0 opacity-[0.015]"
         style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)",
           backgroundSize: "3px 3px",
         }}
       />
 
-      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 pb-32 pt-6 sm:px-8 sm:pt-8">
+      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 pb-18 pt-6 sm:px-8 sm:pt-8">
         {/* Header */}
         <motion.header
           initial={{ opacity: 0, y: -8 }}
@@ -117,18 +110,16 @@ function Index() {
               <Shield className="size-5" />
             </div>
             <h1 className="truncate text-xl font-semibold tracking-tight sm:text-2xl">
-              Subscription
+              {PAGE_TITLE}
             </h1>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <CopyIconButton />
-            <IconButton
-              ariaLabel="Поддержка в Telegram"
-              asLink
-              href="https://t.me/"
-            >
-              <Send className="size-[18px]" />
-            </IconButton>
+            {SUBSCRIPTION_URL && <CopyIconButton t={t} />}
+            {SUPPORT_URL && (
+              <IconButton ariaLabel={t.supportTelegram} asLink href={SUPPORT_URL}>
+                <Send className="size-[18px]" />
+              </IconButton>
+            )}
           </div>
         </motion.header>
 
@@ -136,232 +127,227 @@ function Index() {
 
         {loaded && (
           <>
-        {/* Subscription card */}
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          className="group relative overflow-hidden rounded-3xl border border-white/10 bg-card glow-soft transition-all duration-500 hover:border-white/20 hover:glow-strong"
-        >
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            aria-controls="subscription-details"
-            className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
-          >
-            <div className="flex min-w-0 items-center gap-4">
-              <span className="relative grid size-3 shrink-0 place-items-center">
-                <span className="absolute inset-0 rounded-full bg-white pulse-glow" />
-              </span>
-              <div className="min-w-0">
-                <div className="truncate text-base font-medium tracking-tight">
-                  intezya
-                </div>
-                <div className="truncate text-sm text-muted-foreground">
-                  Истекает через 7 месяцев
-                </div>
-              </div>
-            </div>
-            <motion.div
-              animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="shrink-0 text-muted-foreground"
+            {/* Subscription card */}
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-card glow-soft transition-[border-color,box-shadow] duration-500 hover:border-white/20 hover:glow-strong"
             >
-              <ChevronDown className="size-5" />
-            </motion.div>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {expanded && (
-              <motion.div
-                key="details"
-                id="subscription-details"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                className="overflow-hidden"
+              <button
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                aria-controls="subscription-details"
+                className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
               >
-                <div className="border-t border-white/10 px-5 py-5 sm:px-6">
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-                    <Field label="Пользователь" value="intezya" />
-                    <Field
-                      label="Статус"
-                      value={
-                        <span className="inline-flex items-center gap-2">
-                          <span className="size-1.5 rounded-full bg-white" />
-                          Активна
-                        </span>
-                      }
-                    />
-                    <Field label="Окончание" value="02.02.2027" />
-                  </div>
-                  <div className="mt-6">
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Трафик
-                        <span className="ml-2 text-xs text-muted-foreground/70">
-                          сброс {resetDate}
-                        </span>
-                      </span>
-                      <span className="tabular-nums">
-                        <span className="text-foreground">{usedGiB.toFixed(2)} GiB</span>
-                        <span className="text-muted-foreground"> / {totalGiB.toFixed(2)} GiB</span>
-                      </span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${usedPct}%` }}
-                        transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-                        className={cn(
-                          "h-full rounded-full transition-colors duration-500",
-                          tone === "ok" && "bg-white",
-                          tone === "warn" && "bg-amber-300",
-                          tone === "danger" && "bg-rose-400",
-                        )}
-                        style={{
-                          boxShadow:
-                            tone === "ok"
-                              ? "0 0 12px rgba(255,255,255,0.6)"
-                              : tone === "warn"
-                                ? "0 0 12px rgba(252,211,77,0.55)"
-                                : "0 0 12px rgba(251,113,133,0.6)",
-                        }}
-                      />
-                    </div>
-                    {tone !== "ok" && (
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        {tone === "warn"
-                          ? "Использовано более 80% квоты — следите за расходом."
-                          : "Квота почти исчерпана — трафик скоро закончится."}
-                      </div>
-                    )}
+                <div className="flex min-w-0 items-center gap-4">
+                  <span className="relative grid size-3 shrink-0 place-items-center">
+                    <span className="absolute inset-0 rounded-full bg-white pulse-glow" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate text-base font-medium tracking-tight">intezya</div>
+                    <div className="truncate text-sm text-muted-foreground">{t.expiresIn}</div>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.section>
-
-        {/* Install */}
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.12 }}
-          className="mt-12"
-        >
-          <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
-            <h2 className="text-xl font-semibold tracking-tight">Установка</h2>
-            <Popover open={osOpen} onOpenChange={setOsOpen}>
-              <PopoverTrigger asChild>
-                <button className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft sm:px-4">
-                  {OS_OPTIONS.find((o) => o.id === os)?.icon}
-                  <span>{OS_OPTIONS.find((o) => o.id === os)?.label}</span>
-                  <ChevronDown
-                    className={cn(
-                      "size-4 text-muted-foreground transition-transform duration-300",
-                      osOpen && "rotate-180",
-                    )}
-                  />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                sideOffset={8}
-                className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
-              >
-                {OS_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => {
-                      setOs(opt.id);
-                      setOsOpen(false);
-                    }}
-                    className={cn(
-                      "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
-                      os === opt.id
-                        ? "bg-white/10 text-foreground"
-                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
-                    )}
-                  >
-                    {opt.icon}
-                    {opt.label}
-                    {os === opt.id && <Check className="ml-auto size-4" />}
-                  </button>
-                ))}
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Client toggle */}
-          <ClientToggle client={client} setClient={setClient} />
-
-          {/* Timeline */}
-          <div className="mt-10">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={client}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-              >
-                {client === "clash" ? (
-                  <ClashSteps os={os} />
-                ) : (
-                  <HiddifySteps os={os} />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.section>
-
-        {/* Language pill */}
-        <div className="mt-14 flex justify-center sm:mt-16">
-          <Popover open={langOpen} onOpenChange={setLangOpen}>
-            <PopoverTrigger asChild>
-              <button className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
-                <Globe className="size-4 text-muted-foreground" />
-                <span className="text-base leading-none">{lang.flag}</span>
-                <span>{lang.label}</span>
-                <ChevronDown
-                  className={cn(
-                    "size-4 text-muted-foreground transition-transform duration-300",
-                    langOpen && "rotate-180",
-                  )}
-                />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              side="top"
-              sideOffset={8}
-              className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
-            >
-              {LANGS.map((l) => (
-                <button
-                  key={l.code}
-                  onClick={() => {
-                    setLang(l);
-                    setLangOpen(false);
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors",
-                    l.code === lang.code
-                      ? "bg-white/10 text-foreground"
-                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
-                  )}
+                <motion.div
+                  animate={{ rotate: expanded ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="shrink-0 text-muted-foreground"
                 >
-                  <span className="text-base leading-none">{l.flag}</span>
-                  {l.label}
-                  {l.code === lang.code && (
-                    <Check className="ml-auto size-4" />
-                  )}
-                </button>
-              ))}
-            </PopoverContent>
-          </Popover>
-        </div>
+                  <ChevronDown className="size-5" />
+                </motion.div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {expanded && (
+                  <motion.div
+                    key="details"
+                    id="subscription-details"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="border-t border-white/10 px-5 py-5 sm:px-6">
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
+                        <Field label={t.user} value="intezya" />
+                        <Field
+                          label={t.status}
+                          value={
+                            <span className="inline-flex items-center gap-2">
+                              <span className="size-1.5 rounded-full bg-white" />
+                              {t.active}
+                            </span>
+                          }
+                        />
+                        <Field label={t.expiresAt} value="02.02.2027" />
+                      </div>
+                      <div className="mt-6">
+                        <div className="mb-2 flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            {t.traffic}
+                            <span className="ml-2 text-xs text-muted-foreground/70">
+                              {t.reset} {resetDate}
+                            </span>
+                          </span>
+                          <span className="tabular-nums">
+                            <span className="text-foreground">{usedGiB.toFixed(2)} GiB</span>
+                            <span className="text-muted-foreground">
+                              {" "}
+                              / {totalGiB.toFixed(2)} GiB
+                            </span>
+                          </span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${usedPct}%` }}
+                            transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                            className={cn(
+                              "h-full rounded-full transition-colors duration-500",
+                              tone === "ok" && "bg-white",
+                              tone === "warn" && "bg-amber-300",
+                              tone === "danger" && "bg-rose-400",
+                            )}
+                            style={{
+                              boxShadow:
+                                tone === "ok"
+                                  ? "0 0 12px rgba(255,255,255,0.6)"
+                                  : tone === "warn"
+                                    ? "0 0 12px rgba(252,211,77,0.55)"
+                                    : "0 0 12px rgba(251,113,133,0.6)",
+                            }}
+                          />
+                        </div>
+                        {tone !== "ok" && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {tone === "warn" ? t.quotaWarn : t.quotaDanger}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.section>
+
+            {/* Install */}
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.12 }}
+              className="mt-12"
+            >
+              <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+                <h2 className="text-xl font-semibold tracking-tight">{t.installTitle}</h2>
+                <Popover open={osOpen} onOpenChange={setOsOpen}>
+                  <PopoverTrigger asChild>
+                    <button className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft sm:px-4">
+                      {OS_OPTIONS.find((o) => o.id === os)?.icon}
+                      <span>{OS_OPTIONS.find((o) => o.id === os)?.label}</span>
+                      <ChevronDown
+                        className={cn(
+                          "size-4 text-muted-foreground transition-transform duration-300",
+                          osOpen && "rotate-180",
+                        )}
+                      />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    sideOffset={8}
+                    className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
+                  >
+                    {OS_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          setOs(opt.id);
+                          setOsOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
+                          os === opt.id
+                            ? "bg-white/10 text-foreground"
+                            : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                        )}
+                      >
+                        {opt.icon}
+                        {opt.label}
+                        {os === opt.id && <Check className="ml-auto size-4" />}
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Client toggle */}
+              <ClientToggle client={client} setClient={setClient} />
+
+              {/* Timeline */}
+              <div className="mt-10">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={client}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {client === "clash" ? (
+                      <ClashSteps os={os} t={t} />
+                    ) : (
+                      <HiddifySteps os={os} t={t} />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.section>
+
+            {/* Language pill */}
+            <div className="pointer-events-none fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 flex justify-center px-4 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]">
+              <Popover open={langOpen} onOpenChange={setLangOpen}>
+                <PopoverTrigger asChild>
+                  <button className="pointer-events-auto inline-flex translate-y-4 items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm shadow-2xl backdrop-blur transition-all duration-300 hover:border-white/25 hover:bg-white/10 hover:glow-soft">
+                    <Globe className="size-4 text-muted-foreground" />
+                    <span className="text-base leading-none">{lang.flag}</span>
+                    <span>{lang.label}</span>
+                    <ChevronDown
+                      className={cn(
+                        "size-4 text-muted-foreground transition-transform duration-300",
+                        langOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="top"
+                  sideOffset={8}
+                  className="z-50 w-44 rounded-2xl border-white/10 bg-popover p-1.5 glow-soft"
+                >
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => {
+                        setLang(l);
+                        setLangOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors",
+                        l.code === lang.code
+                          ? "bg-white/10 text-foreground"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                      )}
+                    >
+                      <span className="text-base leading-none">{l.flag}</span>
+                      {l.label}
+                      {l.code === lang.code && <Check className="ml-auto size-4" />}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            </div>
           </>
         )}
       </main>
@@ -386,13 +372,7 @@ function IconButton({
     "group grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition-all duration-300 hover:scale-105 hover:border-white/25 hover:bg-white/10 hover:glow-soft active:scale-95";
   if (asLink && href) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        aria-label={ariaLabel}
-        className={cls}
-      >
+      <a href={href} target="_blank" rel="noreferrer" aria-label={ariaLabel} className={cls}>
         {children}
       </a>
     );
@@ -404,20 +384,20 @@ function IconButton({
   );
 }
 
-function CopyIconButton() {
+function CopyIconButton({ t }: { t: Translation }) {
   const [copied, setCopied] = useState(false);
   const onClick = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(SUBSCRIPTION_URL);
     }
-    toast.success("Ссылка скопирована");
+    toast.success(t.copyToast);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   };
   return (
     <button
       onClick={onClick}
-      aria-label="Скопировать ссылку подписки"
+      aria-label={t.copySubscriptionAria}
       className="group relative grid size-10 place-items-center overflow-hidden rounded-full border border-white/10 bg-white/5 text-foreground transition-all duration-300 hover:scale-105 hover:border-white/25 hover:bg-white/10 hover:glow-soft active:scale-95"
     >
       <AnimatePresence mode="wait" initial={false}>
@@ -452,7 +432,6 @@ function CopyIconButton() {
 function PageSkeleton() {
   return (
     <div aria-hidden className="space-y-12">
-      <div className="h-[88px] rounded-3xl skeleton" />
       <div className="space-y-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
           <div className="h-7 w-32 rounded-md skeleton" />
@@ -480,10 +459,12 @@ function DeepLinkButton({
   href,
   children,
   icon,
+  t,
 }: {
   href: string;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  t: Translation;
 }) {
   const [showFallback, setShowFallback] = useState(false);
   const timerRef = useRef<number | null>(null);
@@ -528,24 +509,12 @@ function DeepLinkButton({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.25 }}
-            className="flex flex-col items-start gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/[0.04] p-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-3"
+            className="flex max-w-sm flex-col items-start gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/[0.04] p-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-3"
           >
             <span className="inline-flex items-center gap-2 text-amber-200/90">
               <AlertCircle className="size-4 shrink-0" />
-              Не открылось? Похоже, приложение ещё не установлено.
+              {t.appMissing}
             </span>
-            <button
-              onClick={() => {
-                if (typeof navigator !== "undefined" && navigator.clipboard) {
-                  navigator.clipboard.writeText(SUBSCRIPTION_URL);
-                }
-                toast.success("Ссылка скопирована");
-              }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-foreground transition-colors hover:border-white/25 hover:bg-white/10"
-            >
-              <Copy className="size-3.5" />
-              Скопировать ссылку
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -553,30 +522,16 @@ function DeepLinkButton({
   );
 }
 
-function Field({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-1 text-sm font-medium">{value}</div>
     </div>
   );
 }
 
-function ClientToggle({
-  client,
-  setClient,
-}: {
-  client: Client;
-  setClient: (c: Client) => void;
-}) {
+function ClientToggle({ client, setClient }: { client: Client; setClient: (c: Client) => void }) {
   const items: { id: Client; label: string }[] = [
     { id: "clash", label: "Clash Verge" },
     { id: "hiddify", label: "Hiddify" },
@@ -681,7 +636,7 @@ function GhostAction({
   );
 }
 
-function ClashSteps({ os }: { os: OS }) {
+function ClashSteps({ os, t }: { os: OS; t: Translation }) {
   const downloads: { id: string; label: string; matchOs: OS[]; href: string }[] = [
     { id: "win", label: "Windows", matchOs: ["windows"], href: "#" },
     { id: "mac-intel", label: "macOS Intel", matchOs: ["macos"], href: "#" },
@@ -691,8 +646,8 @@ function ClashSteps({ os }: { os: OS }) {
 
   return (
     <ol className="space-y-10">
-      <Step index={1} title="Скачайте Clash Verge">
-        <p>Выберите сборку для вашей платформы.</p>
+      <Step index={1} title={t.clashDownloadTitle}>
+        <p>{t.chooseBuild}</p>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {downloads.map((d) => (
             <GhostAction
@@ -706,42 +661,39 @@ function ClashSteps({ os }: { os: OS }) {
           ))}
         </div>
       </Step>
-      <Step index={2} title="Смените язык интерфейса">
-        <p>
-          При необходимости откройте Settings → Language и выберите подходящий
-          язык.
-        </p>
+      <Step index={2} title={t.changeLanguageTitle}>
+        <p>{t.changeLanguageBody}</p>
       </Step>
-      <Step index={3} title="Добавьте подписку">
-        <p>
-          Нажмите кнопку — приложение откроется и импортирует профиль
-          автоматически.
-        </p>
-        <DeepLinkButton
-          href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-          icon={<Download className="size-4" />}
-        >
-          Добавить подписку
-        </DeepLinkButton>
+      <Step index={3} title={t.addSubscriptionTitle}>
+        <p>{t.clashAddBody}</p>
+        {SUBSCRIPTION_URL && (
+          <DeepLinkButton
+            href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+            icon={<Download className="size-4" />}
+            t={t}
+          >
+            {t.addSubscriptionButton}
+          </DeepLinkButton>
+        )}
       </Step>
-      <Step index={4} title="Не сработало? Импортируйте вручную">
-        <p>
-          Скопируйте ссылку и вставьте её в Profiles → Import в Clash Verge.
-        </p>
+      <Step index={4} title={t.manualImportTitle}>
+        <p>{t.manualImportBody}</p>
         <div>
-          <GhostAction onClick={copyLink} icon={<Copy className="size-4" />}>
-            Скопировать ссылку
-          </GhostAction>
+          {SUBSCRIPTION_URL && (
+            <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
+              {t.copyLink}
+            </GhostAction>
+          )}
         </div>
       </Step>
-      <Step index={5} title="Подключитесь" last>
-        <p>Выберите сервер, включите VPN и активируйте TUN Mode.</p>
+      <Step index={5} title={t.connectTitle} last>
+        <p>{t.clashConnectBody}</p>
       </Step>
     </ol>
   );
 }
 
-function HiddifySteps({ os }: { os: OS }) {
+function HiddifySteps({ os, t }: { os: OS; t: Translation }) {
   const downloads: { id: string; label: string; matchOs: OS[]; href: string }[] = [
     { id: "win", label: "Windows", matchOs: ["windows"], href: "#" },
     { id: "mac", label: "macOS", matchOs: ["macos"], href: "#" },
@@ -749,8 +701,8 @@ function HiddifySteps({ os }: { os: OS }) {
   ];
   return (
     <ol className="space-y-10">
-      <Step index={1} title="Скачайте Hiddify">
-        <p>Выберите сборку для вашей платформы.</p>
+      <Step index={1} title={t.hiddifyDownloadTitle}>
+        <p>{t.chooseBuild}</p>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {downloads.map((d) => (
             <GhostAction
@@ -764,22 +716,27 @@ function HiddifySteps({ os }: { os: OS }) {
           ))}
         </div>
         <div className="pt-1">
-          <GhostAction onClick={copyLink} icon={<Copy className="size-4" />}>
-            Скопировать ссылку
-          </GhostAction>
+          {SUBSCRIPTION_URL && (
+            <GhostAction onClick={() => copyLink(t.copyToast)} icon={<Copy className="size-4" />}>
+              {t.copyLink}
+            </GhostAction>
+          )}
         </div>
       </Step>
-      <Step index={2} title="Добавьте подписку">
-        <p>Откройте приложение и импортируйте профиль одной кнопкой.</p>
-        <DeepLinkButton
-          href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-          icon={<Download className="size-4" />}
-        >
-          Добавить подписку
-        </DeepLinkButton>
+      <Step index={2} title={t.addSubscriptionTitle}>
+        <p>{t.hiddifyAddBody}</p>
+        {SUBSCRIPTION_URL && (
+          <DeepLinkButton
+            href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
+            icon={<Download className="size-4" />}
+            t={t}
+          >
+            {t.addSubscriptionButton}
+          </DeepLinkButton>
+        )}
       </Step>
-      <Step index={3} title="Подключитесь" last>
-        <p>В приложении выберите сервер и нажмите основную кнопку подключения.</p>
+      <Step index={3} title={t.connectTitle} last>
+        <p>{t.hiddifyConnectBody}</p>
       </Step>
     </ol>
   );
