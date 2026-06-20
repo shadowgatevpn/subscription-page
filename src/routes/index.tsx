@@ -121,7 +121,10 @@ function Index() {
   const tone: "ok" | "warn" | "danger" =
     usagePercent >= 95 ? "danger" : usagePercent >= 80 ? "warn" : "ok";
   const isActive = subscription?.status === "ACTIVE" && subscription.daysLeft >= 0;
-  const subscriptionName =
+  const subscriptionTitle =
+    subscription?.username ??
+    (subscriptionFailed ? t.subscriptionFetchFailed : t.subscriptionLoading);
+  const subscriptionUserValue =
     subscription?.username ??
     (subscriptionFailed ? t.subscriptionUnavailable : t.subscriptionLoading);
   const subscriptionSummary = subscription
@@ -199,7 +202,7 @@ function Index() {
                   </span>
                   <div className="min-w-0">
                     <div className="truncate text-base font-medium tracking-tight">
-                      {subscriptionName}
+                      {subscriptionTitle}
                     </div>
                     {subscriptionSummary && (
                       <div className="truncate text-sm text-muted-foreground">
@@ -230,7 +233,7 @@ function Index() {
                   >
                     <div className="border-t border-white/10 px-5 py-5 sm:px-6">
                       <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-                        <Field label={t.user} value={subscriptionName} />
+                        <Field label={t.user} value={subscriptionUserValue} />
                         <Field
                           label={t.status}
                           value={
