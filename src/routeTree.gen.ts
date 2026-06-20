@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShortUuidRouteImport } from './routes/$shortUuid'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSubscriptionInfoRouteImport } from './routes/api/subscription-info'
+import { Route as ApiPageConfigRouteImport } from './routes/api/page-config'
 
 const ShortUuidRoute = ShortUuidRouteImport.update({
   id: '/$shortUuid',
@@ -28,34 +29,48 @@ const ApiSubscriptionInfoRoute = ApiSubscriptionInfoRouteImport.update({
   path: '/api/subscription-info',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPageConfigRoute = ApiPageConfigRouteImport.update({
+  id: '/api/page-config',
+  path: '/api/page-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$shortUuid': typeof ShortUuidRoute
+  '/api/page-config': typeof ApiPageConfigRoute
   '/api/subscription-info': typeof ApiSubscriptionInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$shortUuid': typeof ShortUuidRoute
+  '/api/page-config': typeof ApiPageConfigRoute
   '/api/subscription-info': typeof ApiSubscriptionInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$shortUuid': typeof ShortUuidRoute
+  '/api/page-config': typeof ApiPageConfigRoute
   '/api/subscription-info': typeof ApiSubscriptionInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$shortUuid' | '/api/subscription-info'
+  fullPaths: '/' | '/$shortUuid' | '/api/page-config' | '/api/subscription-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$shortUuid' | '/api/subscription-info'
-  id: '__root__' | '/' | '/$shortUuid' | '/api/subscription-info'
+  to: '/' | '/$shortUuid' | '/api/page-config' | '/api/subscription-info'
+  id:
+    | '__root__'
+    | '/'
+    | '/$shortUuid'
+    | '/api/page-config'
+    | '/api/subscription-info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ShortUuidRoute: typeof ShortUuidRoute
+  ApiPageConfigRoute: typeof ApiPageConfigRoute
   ApiSubscriptionInfoRoute: typeof ApiSubscriptionInfoRoute
 }
 
@@ -82,12 +97,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSubscriptionInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/page-config': {
+      id: '/api/page-config'
+      path: '/api/page-config'
+      fullPath: '/api/page-config'
+      preLoaderRoute: typeof ApiPageConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ShortUuidRoute: ShortUuidRoute,
+  ApiPageConfigRoute: ApiPageConfigRoute,
   ApiSubscriptionInfoRoute: ApiSubscriptionInfoRoute,
 }
 export const routeTree = rootRouteImport

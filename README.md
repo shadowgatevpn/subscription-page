@@ -41,7 +41,7 @@ Public UI variables:
 | --- | --- |
 | `VITE_SUBSCRIPTION_URL` | Public subscription URL fallback/template shown, copied, and used for client import buttons on `/`. On `/<shortUuid>`, the visible route replaces the last path segment for copy/import buttons and for `/api/subscription-info?shortUuid=...`. If this value is empty, subscription copy/import buttons are hidden on `/`. |
 | `VITE_PAGE_TITLE` | Header/title shown in the UI. Defaults to `Subscription`. |
-| `VITE_SUPPORT_URL` | Support link shown as the Telegram/support button. If this value is empty, the support button is hidden. |
+| `VITE_SUPPORT_URL` | Build-time fallback support link shown as the Telegram/support button if runtime `SUPPORT_URL` is unset. |
 | `VITE_SUBSCRIPTION_NOT_FOUND_REDIRECT_URL` | Optional browser redirect URL used when subscription info cannot be loaded. If this value is empty, the page stays open and shows the subscription card with the failed-load state. |
 | `VITE_USE_MOCK_SUBSCRIPTION_INFO` | Optional static/demo mode. Set to `true`, `1`, or `yes` to show bundled mock subscription data instead of calling `/api/subscription-info`. Used by the GitHub Pages workflow. |
 
@@ -49,6 +49,7 @@ Optional variables:
 
 | Variable | Purpose |
 | --- | --- |
+| `SUPPORT_URL` | Runtime support link shown as the Telegram/support button. Preferred for Docker/Dokploy because it is read from the running container environment through `/api/page-config`. If both `SUPPORT_URL` and `VITE_SUPPORT_URL` are empty, the support button is hidden. |
 | `CADDY_AUTH_API_TOKEN` | Optional `X-Api-Key` header for protected panel access. |
 | `CLOUDFLARE_ZERO_TRUST_CLIENT_ID` | Optional Cloudflare Access client id. |
 | `CLOUDFLARE_ZERO_TRUST_CLIENT_SECRET` | Optional Cloudflare Access client secret. |
@@ -61,7 +62,7 @@ REMNAWAVE_PANEL_URL=https://panel.example.com
 REMNAWAVE_API_TOKEN=remnawave_api_token
 VITE_SUBSCRIPTION_URL=https://vpn.example.com/subscription/user/abc123def456
 VITE_PAGE_TITLE=Intezya VPN
-VITE_SUPPORT_URL=https://t.me/support
+SUPPORT_URL=https://t.me/support
 VITE_SUBSCRIPTION_NOT_FOUND_REDIRECT_URL=https://example.com/support/subscription-not-found
 VITE_USE_MOCK_SUBSCRIPTION_INFO=false
 ```

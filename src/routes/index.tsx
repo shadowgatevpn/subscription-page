@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { LANGS, TRANSLATIONS, type Translation } from "@/lib/i18n";
 import type { LangCode } from "@/lib/i18n";
 import { MOCK_SUBSCRIPTION_INFO } from "@/lib/mock-subscription-info";
+import type { RuntimePageConfig } from "@/lib/runtime-page-config";
 import type { SubscriptionCardData } from "@/lib/subscription-info";
 import { getSubscriptionFailureRedirectUrl } from "@/lib/subscription-redirect";
 import { getSubscriptionInfoPath, getSubscriptionUrlForShortUuid } from "@/lib/subscription-url";
@@ -595,7 +596,9 @@ export function Index({ shortUuid }: { shortUuid?: string }) {
   const [loaded, setLoaded] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionCardData | null>(null);
   const [subscriptionFailed, setSubscriptionFailed] = useState(false);
+  const [runtimeConfig, setRuntimeConfig] = useState<RuntimePageConfig | null>(null);
   const t = TRANSLATIONS[lang.code];
+  const supportUrl = runtimeConfig?.supportUrl ?? SUPPORT_URL;
   const subscriptionUrl = getSubscriptionUrlForShortUuid(
     SUBSCRIPTION_URL,
     shortUuid,
@@ -612,6 +615,28 @@ export function Index({ shortUuid }: { shortUuid?: string }) {
     if (CLIENTS_BY_OS[os].some((it) => it.id === client)) return;
     setClient(CLIENTS_BY_OS[os][0].id);
   }, [client, os]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/page-config", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Failed to fetch page config");
+        return (await response.json()) as RuntimePageConfig;
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setRuntimeConfig(data);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setRuntimeConfig(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -707,8 +732,8 @@ export function Index({ shortUuid }: { shortUuid?: string }) {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {subscriptionUrl && <CopyIconButton t={t} subscriptionUrl={subscriptionUrl} />}
-            {SUPPORT_URL && (
-              <IconButton ariaLabel={t.supportTelegram} asLink href={SUPPORT_URL}>
+            {supportUrl && (
+              <IconButton ariaLabel={t.supportTelegram} asLink href={supportUrl}>
                 <Send className="size-[18px]" />
               </IconButton>
             )}
