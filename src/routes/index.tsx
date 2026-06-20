@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getClientSupportUrl } from "@/lib/client-page-config";
+import { detectOSFromClientHints, type DeviceOS } from "@/lib/device-os";
 import { LANGS, TRANSLATIONS, type Translation } from "@/lib/i18n";
 import type { LangCode } from "@/lib/i18n";
 import { MOCK_SUBSCRIPTION_INFO } from "@/lib/mock-subscription-info";
@@ -60,7 +61,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type OS = "android" | "ios" | "linux" | "macos" | "windows";
+type OS = DeviceOS;
 type Client =
   | "clash-meta"
   | "clash-mi"
@@ -620,6 +621,20 @@ export function Index({ shortUuid }: { shortUuid?: string }) {
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 700);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+
+    const userAgentData = (navigator as Navigator & { userAgentData?: { platform?: string } })
+      .userAgentData;
+    const detectedOS = detectOSFromClientHints({
+      userAgent: navigator.userAgent,
+      platform: userAgentData?.platform ?? navigator.platform,
+      maxTouchPoints: navigator.maxTouchPoints,
+    });
+
+    if (detectedOS) setOs(detectedOS);
   }, []);
 
   useEffect(() => {
