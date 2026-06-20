@@ -808,6 +808,17 @@ function getHiddifyDownloads(os: OS): DownloadOption[] {
   return downloads[os] ?? [];
 }
 
+function getClashDeepLink(os: OS): string {
+  const encodedUrl = encodeURIComponent(SUBSCRIPTION_URL);
+  if (os === "ios") return `clash://install-config?overwrite=no&name=Remnawave&url=${encodedUrl}`;
+
+  return `clash://install-config?url=${encodedUrl}`;
+}
+
+function getHiddifyDeepLink(): string {
+  return `hiddify://import/${encodeURIComponent(SUBSCRIPTION_URL)}`;
+}
+
 function ClashSteps({ os, t }: { os: OS; t: Translation }) {
   const downloads = getClashDownloads(os);
 
@@ -829,11 +840,7 @@ function ClashSteps({ os, t }: { os: OS; t: Translation }) {
       <Step index={3} title={t.addSubscriptionTitle}>
         <p>{t.clashAddBody}</p>
         {SUBSCRIPTION_URL && (
-          <DeepLinkButton
-            href={`clash://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-            icon={<Download className="size-4" />}
-            t={t}
-          >
+          <DeepLinkButton href={getClashDeepLink(os)} icon={<Download className="size-4" />} t={t}>
             {t.addSubscriptionButton}
           </DeepLinkButton>
         )}
@@ -880,11 +887,7 @@ function HiddifySteps({ os, t }: { os: OS; t: Translation }) {
       <Step index={2} title={t.addSubscriptionTitle}>
         <p>{t.hiddifyAddBody}</p>
         {SUBSCRIPTION_URL && (
-          <DeepLinkButton
-            href={`hiddify://install-config?url=${encodeURIComponent(SUBSCRIPTION_URL)}`}
-            icon={<Download className="size-4" />}
-            t={t}
-          >
+          <DeepLinkButton href={getHiddifyDeepLink()} icon={<Download className="size-4" />} t={t}>
             {t.addSubscriptionButton}
           </DeepLinkButton>
         )}
