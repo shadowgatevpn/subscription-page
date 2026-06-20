@@ -12,3 +12,7 @@ export const SUBSCRIPTION_URL = envValue(
   "https://vpn.example.com/subscription/intezya/abc123def456",
 );
 export const SUPPORT_URL = envValue("VITE_SUPPORT_URL", "https://t.me/");
+export const SUBSCRIPTION_NOT_FOUND_REDIRECT_URL = envValue(
+  "VITE_SUBSCRIPTION_NOT_FOUND_REDIRECT_URL",
+  "",
+);

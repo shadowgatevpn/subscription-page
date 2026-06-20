@@ -20,8 +20,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { LANGS, TRANSLATIONS, type Translation } from "@/lib/i18n";
 import type { LangCode } from "@/lib/i18n";
 import type { SubscriptionCardData } from "@/lib/subscription-info";
+import { getSubscriptionFailureRedirectUrl } from "@/lib/subscription-redirect";
 import { cn } from "@/lib/utils";
-import { PAGE_TITLE, SUBSCRIPTION_URL, SUPPORT_URL } from "@/page-config";
+import {
+  PAGE_TITLE,
+  SUBSCRIPTION_NOT_FOUND_REDIRECT_URL,
+  SUBSCRIPTION_URL,
+  SUPPORT_URL,
+} from "@/page-config";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -109,6 +115,14 @@ function Index() {
       })
       .catch(() => {
         if (cancelled) return;
+        const redirectUrl = getSubscriptionFailureRedirectUrl(
+          true,
+          SUBSCRIPTION_NOT_FOUND_REDIRECT_URL,
+        );
+        if (redirectUrl) {
+          window.location.assign(redirectUrl);
+          return;
+        }
         setSubscriptionFailed(true);
       });
 
