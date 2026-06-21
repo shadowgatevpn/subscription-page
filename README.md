@@ -68,6 +68,23 @@ Optional variables:
 | `CLOUDFLARE_ZERO_TRUST_CLIENT_SECRET` | Optional Cloudflare Access client secret. |
 | `EGAMES_COOKIE` | Optional cookie forwarded to the panel. |
 
+### Build-Time vs Runtime
+
+Variables prefixed with `VITE_` are build-time client configuration. They are
+read by Vite during `npm run build` and baked into the browser bundle. Changing
+them in a running Docker/Dokploy container does not affect the already-built UI;
+rebuild and redeploy the image after changing a `VITE_*` value.
+
+Server-side variables without the `VITE_` prefix are read by the running server
+process. In this app, `SUPPORT_URL` is the only UI-facing runtime override: the
+browser fetches it from `/api/page-config`, so it can be changed in the container
+environment without rebuilding the image. `VITE_SUPPORT_URL` remains only a
+build-time fallback.
+
+`VITE_NOT_FOUND_REDIRECT_URL` and
+`VITE_SUBSCRIPTION_NOT_FOUND_REDIRECT_URL` are currently build-time settings. To
+change either redirect in production, set the value before building the image.
+
 Example:
 
 ```bash
