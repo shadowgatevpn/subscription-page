@@ -12,7 +12,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { getClientNotFoundRedirectUrl } from "../lib/client-page-config";
-import { getNotFoundRedirectUrl, redirectNotFoundPath } from "../lib/not-found-redirect";
+import {
+  getNotFoundRedirectUrl,
+  getNotFoundRenderMode,
+  redirectNotFoundPath,
+} from "../lib/not-found-redirect";
 import type { RuntimePageConfig } from "../lib/runtime-page-config";
 import { Toaster } from "@/components/ui/sonner";
 import { NOT_FOUND_REDIRECT_URL, PAGE_TITLE } from "@/page-config";
@@ -25,6 +29,7 @@ export function NotFoundComponent() {
     runtimeConfig === undefined
       ? undefined
       : getNotFoundRedirectUrl(getClientNotFoundRedirectUrl(runtimeConfig, NOT_FOUND_REDIRECT_URL));
+  const renderMode = getNotFoundRenderMode(runtimeConfig !== undefined, redirectUrl);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,39 +61,25 @@ export function NotFoundComponent() {
     );
   }, [runtimeConfig]);
 
-  if (!redirectUrl) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <div className="max-w-md text-center">
-          <h1 className="text-7xl font-bold text-foreground">404</h1>
-          <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            The page you're looking for doesn't exist or has been moved.
-          </p>
-          <div className="mt-6">
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Go home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+  if (renderMode !== "not-found") {
+    return null;
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold text-foreground">Redirecting...</h1>
+        <h1 className="text-7xl font-bold text-foreground">404</h1>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
         <div className="mt-6">
-          <a
-            href={redirectUrl}
+          <Link
+            to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Continue
-          </a>
+            Go home
+          </Link>
         </div>
       </div>
     </div>
@@ -132,7 +123,6 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     </div>
   );
 }
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [

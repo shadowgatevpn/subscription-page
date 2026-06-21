@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 import {
+  getNotFoundRenderMode,
   getNotFoundRedirectUrl,
   redirectNotFoundPath,
   type RedirectLocation,
@@ -20,3 +21,7 @@ assert.equal(getNotFoundRedirectUrl("   "), undefined);
 assert.equal(redirectNotFoundPath(location, "https://google.com"), true);
 assert.equal(redirectNotFoundPath(location, ""), false);
 assert.deepEqual(redirects, ["https://google.com"]);
+
+assert.equal(getNotFoundRenderMode(false, undefined), "pending");
+assert.equal(getNotFoundRenderMode(true, "https://google.com"), "redirect");
+assert.equal(getNotFoundRenderMode(true, undefined), "not-found");
