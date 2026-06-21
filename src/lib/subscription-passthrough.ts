@@ -10,6 +10,7 @@ const IGNORED_HEADERS = new Set([
   "cf-cache-status",
   "cf-ray",
   "connection",
+  "content-encoding",
   "content-length",
   "content-security-policy",
   "cross-origin-opener-policy",
@@ -115,7 +116,7 @@ export async function handleSubscriptionPassthrough(request: Request): Promise<R
 
   return new Response(upstreamResponse.body, {
     status: upstreamResponse.status,
-    headers: getResponseHeaders(upstreamResponse),
+    headers: getPassthroughResponseHeaders(upstreamResponse.headers),
   });
 }
 
@@ -153,9 +154,9 @@ function getRemnawavePassthroughHeaders(request: Request, apiToken: string): Hea
   return headers;
 }
 
-function getResponseHeaders(response: Response): Headers {
+export function getPassthroughResponseHeaders(responseHeaders: Headers): Headers {
   const headers = new Headers();
-  response.headers.forEach((value, key) => {
+  responseHeaders.forEach((value, key) => {
     if (!IGNORED_HEADERS.has(key.toLowerCase())) {
       headers.set(key, value);
     }

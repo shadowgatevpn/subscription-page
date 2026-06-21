@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 import {
+  getPassthroughResponseHeaders,
   getSubscriptionPassthroughRequest,
   getUpstreamSubscriptionUrl,
   isBrowserUserAgent,
@@ -54,3 +55,19 @@ assert.equal(
   getUpstreamSubscriptionUrl("https://panel.example.com", "RUo2sPJ9Tz5tmTNm", "happ"),
   "https://panel.example.com/api/sub/RUo2sPJ9Tz5tmTNm/happ",
 );
+
+const upstreamResponseHeaders = new Headers({
+  "content-encoding": "br",
+  "content-length": "42",
+  "content-type": "application/json; charset=utf-8",
+  "subscription-userinfo": "upload=0; download=1; total=10; expire=20",
+});
+const passthroughResponseHeaders = getPassthroughResponseHeaders(upstreamResponseHeaders);
+
+assert.equal(passthroughResponseHeaders.get("content-encoding"), null);
+assert.equal(passthroughResponseHeaders.get("content-length"), null);
+assert.equal(
+  passthroughResponseHeaders.get("subscription-userinfo"),
+  "upload=0; download=1; total=10; expire=20",
+);
+assert.equal(passthroughResponseHeaders.get("content-type"), "application/json; charset=utf-8");
