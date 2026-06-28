@@ -187,62 +187,6 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
   ],
   ios: [
     {
-      id: "happ",
-      label: "Happ",
-      deepLink: "happ://add/",
-      downloads: [
-        {
-          id: "app-store-ru",
-          label: "App Store (RU)",
-          href: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973",
-        },
-        {
-          id: "app-store-global",
-          label: "App Store (Global)",
-          href: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
-        },
-      ],
-    },
-    {
-      id: "stash",
-      label: "Stash",
-      deepLink: "stash://install-config?url=",
-      downloads: [
-        {
-          id: "app-store",
-          label: "App Store",
-          href: "https://apps.apple.com/us/app/stash-rule-based-proxy/id1596063349",
-        },
-      ],
-      connect:
-        "На главном экране нажмите Start. Разрешите добавление VPN-конфигурации, затем в разделе Policy выберите страну подключения.",
-    },
-    {
-      id: "streisand",
-      label: "Streisand",
-      deepLink: "streisand://import/",
-      downloads: [
-        {
-          id: "app-store",
-          label: "App Store",
-          href: "https://apps.apple.com/ru/app/streisand/id6450534064",
-        },
-      ],
-    },
-    {
-      id: "shadowrocket",
-      label: "Shadowrocket",
-      deepLink: "sub://",
-      base64Subscription: true,
-      downloads: [
-        {
-          id: "app-store",
-          label: "App Store",
-          href: "https://apps.apple.com/ru/app/shadowrocket/id932747118",
-        },
-      ],
-    },
-    {
       id: "clash-mi",
       label: "Clash Mi",
       deepLink: "clash://install-config?overwrite=no&name=Remnawave&url=",
@@ -487,66 +431,6 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
     },
   ],
   windows: [
-    {
-      id: "flclashx",
-      label: "FlClashX",
-      deepLink: "flclashx://install-config?url=",
-      downloads: [
-        {
-          id: "releases",
-          label: "Windows",
-          href: "https://github.com/pluralplay/FlClashX/releases/tag/v0.2.1",
-        },
-      ],
-      manualImport:
-        "Если подписка не добавилась, скопируйте ссылку. В FlClashX откройте Профили, нажмите +, выберите URL, вставьте ссылку и отправьте форму.",
-    },
-    {
-      id: "koala-clash",
-      label: "Koala Clash",
-      deepLink: "koala-clash://install-config?url=",
-      downloads: [
-        {
-          id: "win-x64",
-          label: "Windows",
-          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_x64-setup.exe",
-        },
-        {
-          id: "win-arm",
-          label: "Windows ARM",
-          href: "https://github.com/coolcoala/koala-clash/releases/download/1.3.1/Koala.Clash_arm64-setup.exe",
-        },
-      ],
-      warning:
-        "Если вы раньше использовали Clash Verge Rev, удалите его перед установкой Koala Clash.",
-      manualImport:
-        "Если подписка не добавилась, скопируйте ссылку. В Koala Clash откройте главную страницу, нажмите Add Profile, вставьте ссылку и нажмите Import.",
-    },
-    {
-      id: "prizrak-box",
-      label: "Prizrak-Box",
-      deepLink: "prizrak-box://install-config?url=",
-      downloads: [
-        {
-          id: "win-x64",
-          label: "Windows",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-amd64.msi",
-        },
-        {
-          id: "win-portable",
-          label: "Windows Portable",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-amd64.zip",
-        },
-        {
-          id: "win-arm",
-          label: "Windows ARM",
-          href: "https://github.com/legiz-ru/Prizrak-Box/releases/download/v1.0.20/windows-arm64.msi",
-        },
-      ],
-      warning: "Запустите программу от имени администратора.",
-      manualImport:
-        "Если подписка не добавилась, скопируйте ссылку. В Prizrak-Box откройте Profiles, нажмите +, вставьте ссылку и подтвердите.",
-    },
     {
       id: "happ",
       label: "Happ",
