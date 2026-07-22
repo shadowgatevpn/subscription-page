@@ -29,6 +29,6 @@ function clientLabelsFor(os: "ios" | "windows"): string[] {
   return labels;
 }
 
-assert.deepEqual(clientLabelsFor("ios"), ["Clash Mi"]);
+assert.deepEqual(clientLabelsFor("ios"), ["Happ", "Stash", "Clash Mi"]);
 
 assert.deepEqual(clientLabelsFor("windows"), ["Happ", "Clash Verge", "Hiddify"]);

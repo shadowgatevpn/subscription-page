@@ -187,6 +187,37 @@ const CLIENTS_BY_OS: Record<OS, ClientGuide[]> = {
   ],
   ios: [
     {
+      id: "happ",
+      label: "Happ",
+      deepLink: "happ://add/",
+      downloads: [
+        {
+          id: "app-store-ru",
+          label: "App Store (RU)",
+          href: "https://apps.apple.com/ru/app/happ-proxy-utility-plus/id6746188973",
+        },
+        {
+          id: "app-store-global",
+          label: "App Store (Global)",
+          href: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
+        },
+      ],
+    },
+    {
+      id: "stash",
+      label: "Stash",
+      deepLink: "stash://install-config?url=",
+      downloads: [
+        {
+          id: "app-store",
+          label: "App Store",
+          href: "https://apps.apple.com/us/app/stash-rule-based-proxy/id1596063349",
+        },
+      ],
+      connect:
+        "На главном экране нажмите Start. Разрешите добавление VPN-конфигурации, затем в разделе Policy выберите страну подключения.",
+    },
+    {
       id: "clash-mi",
       label: "Clash Mi",
       deepLink: "clash://install-config?overwrite=no&name=Remnawave&url=",
